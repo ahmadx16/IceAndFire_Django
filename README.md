@@ -13,10 +13,9 @@ source /path/to/new/virtual/environment
 ```
 The above commands will create a new virtual environment and activate it. Learn more about virtual environment venv [here](https://docs.python.org/3/library/venv.html).
 
-Now install Django 3 and Django Rest framework on virtual environment using following commands.
+Now install application requirements using following command.
 
 ```shell
-pip install django djangorestframework
+pip install -r requirements.txt
 ```
-
 
