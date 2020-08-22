@@ -9,3 +9,8 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = '__all__'
 
+    def to_representation(self, instance):
+        """Convert  to lowercase."""
+        raw_obj = super().to_representation(instance)
+
+        return raw_obj
