@@ -74,5 +74,3 @@ class BookViewSet(viewsets.ModelViewSet):
         self.response_format["status"] = "success"
         self.response_format["data"].append(serializer.data)
         return Response(self.response_format)
-
-    # def destroy(self, request, *args, **kwargs):
