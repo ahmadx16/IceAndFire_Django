@@ -1,16 +1,18 @@
 from rest_framework import serializers
 
-from internal_books.models import Book
+from internal_books.models import Book, BookAndAuthors
 
 
-# Bool Serializer
+class BookAndAuthorsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookAndAuthors
+        fields = ('author',)
+
+
 class BookSerializer(serializers.ModelSerializer):
+
+    authors = BookAndAuthorsSerializer(many=True, read_only=True)
+
     class Meta:
         model = Book
-        fields = '__all__'
-
-    def to_representation(self, instance):
-        """Convert  to lowercase."""
-        raw_obj = super().to_representation(instance)
-
-        return raw_obj
+        fields = ('name', 'isbn', 'authors', 'number_of_pages', 'publisher', 'country', 'release_date')
