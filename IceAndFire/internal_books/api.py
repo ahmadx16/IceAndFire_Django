@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 
 from internal_books.models import Book
 from .serializers import BookSerializer
@@ -31,6 +32,8 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
 
     def create(self, request, *args, **kwargs):
+        # authors = request.data.pop('authors')
+        # print(authors)
         create_response = super(BookViewSet, self).create(request, *args, **kwargs)
         response_format = ResponseInfo(status_code=201,
                                        status="success",
