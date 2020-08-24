@@ -14,16 +14,8 @@ class Book(models.Model):
 
 
 class Author(models.Model):
+    book = models.ForeignKey(Book, default=1, related_name="authors", on_delete=models.CASCADE)
     name = models.CharField(max_length=150, primary_key=True)
-    chic = models.CharField(max_length=150)
 
     def __str__(self):
         return str(self.name)
-
-
-class BookAndAuthors(models.Model):
-    book = models.ForeignKey(Book, related_name="authors", on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.book) + " - " + str(self.author)

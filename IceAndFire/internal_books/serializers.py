@@ -1,17 +1,21 @@
 from rest_framework import serializers
 
-from internal_books.models import Book, BookAndAuthors
+from internal_books.models import Book, Author
 
 
-class BookAndAuthorsSerializer(serializers.ModelSerializer):
+class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BookAndAuthors
-        fields = ('author',)
+        model = Author
+        fields = ('name',)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        return ret['name']
 
 
 class BookSerializer(serializers.ModelSerializer):
 
-    authors = BookAndAuthorsSerializer(many=True, read_only=True)
+    authors = AuthorSerializer(many=True, read_only=True)
 
     class Meta:
         model = Book
