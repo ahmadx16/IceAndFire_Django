@@ -12,8 +12,8 @@ class AuthorSerializer(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         return ret['name']
 
-    # def to_internal_value(self, data):
-    #     return super().to_internal_value({"name": data})
+    def to_internal_value(self, data):
+        return super().to_internal_value({"name": data})
 
 
 class BookSerializer(serializers.ModelSerializer):
