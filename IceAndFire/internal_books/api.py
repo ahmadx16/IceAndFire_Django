@@ -7,6 +7,8 @@ from .serializers import BookSerializer
 
 
 class ResponseInfo(object):
+    """Corrects response format"""
+
     def __init__(self, **kwargs):
         self.response = {
             "status_code": kwargs.get("status_code",),
@@ -35,6 +37,7 @@ class BookViewSet(viewsets.ViewSet):
             book_serialized = BookSerializer(book)
             for author in authors:
                 Author.objects.create(book=book, **author)
+
             response_format = ResponseInfo(status_code=201,
                                            status="success",
                                            data=[{"book": book_serialized.data}]).response
@@ -44,6 +47,7 @@ class BookViewSet(viewsets.ViewSet):
 
     def list(self, request):
         serializer = BookSerializer(self.queryset, many=True)
+
         response_format = ResponseInfo(status_code=200,
                                        status="success",
                                        data=serializer.data).response
@@ -58,6 +62,7 @@ class BookViewSet(viewsets.ViewSet):
             validated_data = serializer.validated_data
             self.update_book(validated_data, book)
             serialized_book = BookSerializer(book)
+
             response_format = ResponseInfo(status_code=200,
                                            status="success",
                                            message=message,
@@ -73,6 +78,7 @@ class BookViewSet(viewsets.ViewSet):
         for author in authors:
             author.delete()
         book.delete()
+
         response_format = ResponseInfo(status_code=200,
                                        status="success",
                                        message=message).response
@@ -88,6 +94,8 @@ class BookViewSet(viewsets.ViewSet):
         return Response(response_format)
 
     def update_book(self, validated_data, book):
+        """Updates the new fields if provided"""
+
         book.name = self.get_new_attr(validated_data, 'name', book.name)
         book.isbn = self.get_new_attr(validated_data, 'isbn', book.isbn)
         book.country = self.get_new_attr(validated_data, 'country', book.country)
@@ -99,9 +107,13 @@ class BookViewSet(viewsets.ViewSet):
         book.save()
 
     def get_new_attr(self, validated_data, attr, prev_value):
+        """Returns new attributes from request"""
+
         return validated_data.get(attr, prev_value)
 
     def update_authors(self, updated_authors, book):
+        """Updates authors of a given book instance"""
+
         authors = book.authors.all()
         if not updated_authors:
             return
