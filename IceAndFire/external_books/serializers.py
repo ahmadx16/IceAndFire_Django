@@ -15,7 +15,5 @@ class ExternalBookSerializer(serializers.Serializer):
         ret = super().to_representation(instance)
         ret['number_of_pages'] = ret.pop('numberOfPages')
         ret['release_date'] = ret.pop('released')
-        
+
         return ret
-
-
