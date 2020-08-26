@@ -59,7 +59,7 @@ Now install application requirements using following command.
 pip install -r requirements.txt
 ```
 
-### Launching the application
+## Launching the application
 
 Before launching the application run the following command on terminal
 
@@ -77,3 +77,317 @@ python manage.py runserver 8080
 ```
 
 This command will start the backend server at 127.0.0.1:8080
+
+## Calling the APIs
+
+Following are the APIs that user can call when the server is started.
+
+### Get External Books:
+
+This API calls an [external API](https://anapioficeandfire.com/Documentation#books) and returns a filtered data. 
+
+**Request:**
+
+| Name                | Method | Description                  |
+|---------------------|--------|------------------------------|
+| /api/external-books | GET    | Gives information about book |
+
+</br>
+
+**Parameter:** 
+
+| Name         | DataType     | Required/Optional | Description               |
+|--------------|--------------|-------------------|---------------------------|
+| name         | string       | required          | Name of the book          |
+
+<br>
+
+**Example:**
+
+Lets call following API to provide an example
+
+``` shell
+GET http://localhost:8080/api/external-books?name=A Game of Thrones
+```
+
+It will return response with `status_code=200` and following JSON data 
+
+``` JSON
+[
+    {
+        "name": "A Game of Thrones",
+        "isbn": "978-0553103540",
+        "authors": [
+            "George R. R. Martin"
+        ],
+        "publisher": "Bantam Books",
+        "country": "United States",
+        "number_of_pages": 694,
+        "release_date": "1996-08-01"
+    }
+]
+```
+
+</br>
+
+### CRUD APIs on Local Database:
+
+Following are the APIs that interacts with the local database.
+
+#### **Create Book API**:
+
+Adds a new book to the database.
+
+``` 
+POST /api/v1/books
+```
+
+The request needs to have JSON data in following format:
+
+``` JSON
+{
+    "name": "Book Name",
+    "isbn": "isbn number",
+    "authors": ["author1", "author2"],
+    "country": "United States",
+    "number_of_pages": 694,
+    "publisher": "Publisher name",
+    "release_date": "1999-02-02"
+}
+```
+
+**Example:**
+
+Lets call following API to provide an example.
+
+``` shell
+POST http://localhost:8080/api/v1/books
+```
+
+with following data.
+
+``` JSON
+{
+    "name": "Good Book",
+    "isbn": "978-0553108033",
+    "authors": ["Martin", "ToocoMan"],
+    "country": "United States",
+    "number_of_pages": 694,
+    "publisher": "Bantam Books",
+    "release_date": "1999-02-02"
+}
+```
+
+It will return response with following JSON data 
+
+``` JSON
+{
+    "status_code": 201,
+    "status": "success",
+    "data": [
+        {
+            "book": {
+                "name": "Good Book",
+                "isbn": "978-0553108033",
+                "authors": [
+                    "Martin",
+                    "ToocoMan"
+                ],
+                "number_of_pages": 694,
+                "publisher": "Bantam Books",
+                "country": "United States",
+                "release_date": "1999-02-02"
+            }
+        }
+    ]
+}
+```
+
+</br>
+
+#### **Read Book API**:
+
+Gives information about book
+
+``` 
+GET /api/v1/books
+```
+
+**Parameters:** 
+
+| Name         | DataType     | Required/Optional | Description               |
+|--------------|--------------|-------------------|---------------------------|
+| name         | string       | optional          | Name of the book          |
+| country      | string       | optional          | Country of the book       |
+| publisher    | string       | optional          | Publisher of the book     |
+| release_date | number(year) | optional          | Released year of the book |
+
+</br>
+
+**Example:**
+
+Lets call following API to provide an example
+
+``` shell
+GET http://localhost:8080/api/v1/books
+```
+
+It will return response with following JSON data 
+
+``` JSON
+{
+    "status_code": 200,
+    "status": "success",
+    "data": [
+        {   
+            "id": 1,
+            "name": "Good Book",
+            "isbn": "978-0553108033",
+            "authors": [
+                "Martin",
+                "ToocoMan"
+            ],
+            "number_of_pages": 694,
+            "publisher": "Bantam Books",
+            "country": "United States",
+            "release_date": "1999-02-02"
+        }
+    ]
+}
+```
+
+</br>
+
+#### **Update Book API**:
+
+Adds a new book to the database.
+
+``` 
+PATCH /api/v1/books/:id
+```
+
+The request needs to have any of the following JSON data in following format:
+
+``` JSON
+{
+    "name": "Book Name",
+    "isbn": "isbn number",
+    "authors": ["author1", "author2"],
+    "country": "United States",
+    "number_of_pages": 694,
+    "publisher": "Publisher name",
+    "release_date": "1999-02-02"
+}
+```
+
+**Example:**
+
+Lets call following API to provide an example.
+
+``` shell
+PATCH http://localhost:8080/api/v1/books/1
+```
+
+with following data.
+
+``` JSON
+{
+    "name": "Good Book(updated)",
+    "authors": ["Martin", "ToocoMan", "New Author"],
+    "country": "Pakistan",
+    "publisher": "Bantam Books(new)",
+    "release_date": "2020-02-02"
+}
+```
+
+It will return response with following JSON data 
+
+``` JSON
+{
+    "status_code": 200,
+    "status": "success",
+    "message": "The book Good Book was updated successfully",
+    "data": {
+        "id": 1,
+        "name": "Good Book(updated)",
+        "isbn": "978-0553108033",
+        "authors": [
+            "Martin",
+            "ToocoMan",
+            "New Author"
+        ],
+        "number_of_pages": 694,
+        "publisher": "Bantam Books(new)",
+        "country": "Pakistan",
+        "release_date": "2020-02-02"
+    }
+}
+```
+
+</br>
+
+#### **Delete Book API**:
+
+Deletes the book, given an id. 
+
+``` 
+DELETE /api/v1/books/:id
+```
+
+**Example:**
+
+Lets call following API to provide an example
+
+``` shell
+DELETE http://localhost:8080/api/v1/books/1
+```
+
+It will return response with following JSON data 
+
+``` JSON
+{
+    "status_code": 200,
+    "status": "success",
+    "message": "The book Good Book(updated) was deleted successfully",
+    "data": []
+}
+```
+
+</br>
+
+#### **Show Book API**:
+
+Gets the book info, given an id. 
+
+``` 
+GET /api/v1/books/:id
+```
+
+**Example:**
+
+Lets call following API to provide an example
+
+``` shell
+GET http://localhost:8080/api/v1/books/1
+```
+
+It will return response with following JSON data 
+
+``` JSON
+{
+    "status_code": 200,
+    "status": "success",
+    "data": {
+        "name": "Good Book",
+        "isbn": "978-0553108033",
+        "authors": [
+            "Martin",
+            "ToocoMan"
+        ],
+        "number_of_pages": 694,
+        "publisher": "Bantam Books",
+        "country": "United States",
+        "release_date": "1999-02-02"
+    }
+}
+```

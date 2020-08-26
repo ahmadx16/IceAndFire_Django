@@ -11,7 +11,8 @@ class ExternalBookSerializer(serializers.Serializer):
     released = serializers.DateTimeField(format="%Y-%m-%d")
 
     def to_representation(self, instance):
-        """Convert `username` to lowercase."""
+        """Change keys to the required format"""
+        
         ret = super().to_representation(instance)
         ret['number_of_pages'] = ret.pop('numberOfPages')
         ret['release_date'] = ret.pop('released')
