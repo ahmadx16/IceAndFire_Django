@@ -24,7 +24,7 @@ It is recommended to create a virtual environment before installing django. You 
 
 ``` shell
 python3 -m venv /path/to/new/virtual/environment
-source /path/to/new/virtual/environment
+source /path/to/new/virtual/environment/bin/activate
 ```
 
 The above commands will create and activate a new virtual environment. Learn more about virtual environment venv [here](https://docs.python.org/3/library/venv.html).
