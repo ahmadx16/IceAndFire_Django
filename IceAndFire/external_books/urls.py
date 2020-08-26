@@ -5,5 +5,5 @@ from .api import ExternalBook
 
 
 urlpatterns = [
-    path('', ExternalBook.as_view(), name='external_book' )
+    path('', ExternalBook.as_view(), name='external-book')
 ]
