@@ -1,6 +1,6 @@
-# Ice and Fire API 
-
 ![alt text](https://img.icons8.com/officel/40/000000/winter.png) ![alt text](https://img.icons8.com/emoji/48/000000/fire.png)
+
+# Ice and Fire API 
 
 This application is built on django-rest framework. It implements a REST API that calls an external API service to get information about books. Additionally, it implements a simple *CRUD* (Create, Read, Update, Delete) API with a local database.
 
@@ -8,43 +8,19 @@ The external API that is used here is the ​[Ice And Fire](https://anapioficean
 
 ## Instructions
 
-This application is configured to work with MySQL local server. Following are the instructions to configure MySQL server connection with the application. 
+Following are the instructions that you need perform in order to run the application
 
-**Note**: If you want to quickly see application up and running you may skip MySQL Connection Setup, and move to the Sqlite Connection section. 
+1. [Python Environment Setup](#python-environment-setup)
+1. [Database Setup](#database-setup)
+1. [Launching the Application](#launching-the-application)
+1. [Calling the APIs](#calling-the-apis)
+1. [Executing API TestCases](#executing-api-testcases)
 
-### MySQL Connection Setup
+ 
 
-This application is configured to work with MySQL local server. In order to connect to MySQL Server to do following steps:
+## Python Environment Setup
 
-1.  Install the MySQL server if it is not locally installed on your machine. You can visit [MySQL installation guide](https://dev.MySQL.com/doc/MySQL-installation-excerpt/5.7/en/) for the details of installation of server.
-2. Create a database on MySQL and add the database name, user, and password on file [my.cnf](IceAndFire/IceAndFire/my.cnf) file under client section
-
-``` 
-[client]
-database = database_name
-user = root
-password = password
-default-character-set = utf8
-```
-
-3. Finally, you will need to install a python interface to MySQL, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
-
-### Sqlite Connection Setup (optional)
-
-This step is **NOT** required if you have already setup the MySQL connection. It is a quick workaround if you do not want to go through the process of connecting with MySQL setup. In order to use sqlite as your primary database simply update file [settings.py](IceAndFire/IceAndFire/settings.py) and replace *DATABASES* dictionary from line 79-86 with following code.
-
-``` python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-```
-
-### Python Environment Setup
-
-It is recommended to create a virtual environment before installing django.
+It is recommended to create a virtual environment before installing django. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
 
 ``` shell
 python3 -m venv /path/to/new/virtual/environment
@@ -59,9 +35,48 @@ Now install application requirements using following command.
 pip install -r requirements.txt
 ```
 
-## Launching the application
+## Database Setup
 
-Before launching the application run the following command on terminal
+You can configure any of the following databases.
+
+1. [MySQL Connection Setup](#mysql-connection-setup)
+1. [Sqlite Connection Setup (optional)](#sqlite-connection-setup-optional)
+
+**Note**: If you want to quickly see application up and running you may skip MySQL Connection Setup, and move to the [Sqlite Connection section](#sqlite-connection-setup-optional).
+
+### MySQL Connection Setup
+
+This application is configured to work with MySQL local server. In order to connect to MySQL Server to do following steps:
+
+1.  Install the MySQL server if it is not locally installed on your machine. You can visit [MySQL installation guide](https://dev.MySQL.com/doc/MySQL-installation-excerpt/5.7/en/) for the details of installation of server.
+2. Create a database on MySQL and add the database name, user, and password on file [my.cnf](IceAndFire/IceAndFire/my.cnf) file under client section. You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
+
+``` 
+[client]
+database = database_name
+user = root
+password = password
+default-character-set = utf8
+```
+
+3. Finally, you will need to install a python interface to MySQL in your virtual environment, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
+
+### Sqlite Connection Setup (optional)
+
+This step is **NOT** required if you have already setup the MySQL connection. It is a quick workaround if you do not want to go through the process of connecting with MySQL setup. In order to use sqlite as your primary database simply update file [settings.py](IceAndFire/IceAndFire/settings.py) and replace *DATABASES* dictionary from line 79-86 with following code.
+
+``` python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+## Launching the Application
+
+Before launching the application run the following command on terminal.
 
 ``` shell
 cd IceAndFire
@@ -84,15 +99,11 @@ Following are the APIs that user can call when the server is started.
 
 ### Get External Books:
 
-This API calls an [external API](https://anapioficeandfire.com/Documentation#books) and returns a filtered data. 
+This API calls an [external API](https://anapioficeandfire.com/Documentation#books) and returns a filtered book information. 
 
-**Request:**
-
-| Name                | Method | Description                  |
-|---------------------|--------|------------------------------|
-| /api/external-books | GET    | Gives information about book |
-
-</br>
+``` 
+GET /api/external-books?name=:nameOfABook
+```
 
 **Parameter:** 
 
@@ -391,3 +402,26 @@ It will return response with following JSON data
     }
 }
 ```
+
+## Executing API TestCases:
+
+There are test cases that are developed to test the functionaliity of APIs. To execute tescases run following command. If you are on root folder make sure to navigate to IceAndFire folder first using command `cd IceAndFire`
+
+``` shell
+python manage.py test
+```
+
+The above command will execute testcases and will give following response on the terminal about test execution.
+
+``` shell
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 4.362s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+The *OK* will indicate that all testcases have passed successfully. In case of error it will show *ERRORS*.
