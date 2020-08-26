@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+import datetime as dt
+from rest_framework import status
 
 from internal_books.models import Book, Author
 from .serializers import BookSerializer
@@ -41,16 +43,20 @@ class BookViewSet(viewsets.ViewSet):
             response_format = ResponseInfo(status_code=201,
                                            status="success",
                                            data=[{"book": book_serialized.data}]).response
-            return Response(response_format)
+            return Response(response_format, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors)
 
     def list(self, request):
         serializer = BookSerializer(self.queryset, many=True)
-
+        books = serializer.data
+        relevent_books = []
+        for book in books:
+            if self.is_book_relevent(book, request.query_params):
+                relevent_books.append(book)
         response_format = ResponseInfo(status_code=200,
                                        status="success",
-                                       data=serializer.data).response
+                                       data=relevent_books).response
         return Response(response_format)
 
     def partial_update(self, request, pk=None):
@@ -129,3 +135,22 @@ class BookViewSet(viewsets.ViewSet):
         elif len(authors) < len(updated_authors):
             for i in range(len(authors), len(updated_authors)):
                 Author.objects.create(book=book, name=updated_authors[i])
+
+    def is_book_relevent(self, book, params):
+        """Returns True if the given book is relevent to query"""
+
+        if not params:
+            return True
+
+        check_params = (
+            "name",
+            "country",
+            "publisher"
+        )
+        for check_param in check_params:
+            if params.get(check_param,) == book.get(check_param):
+                return True
+
+        year = dt.datetime.strptime(book.get("release_date"), "%Y-%m-%d").strftime("%Y")
+
+        return year == params.get("release_date",)

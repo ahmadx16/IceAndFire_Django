@@ -25,27 +25,8 @@ class ExternalBook(APIView):
             books = serializer.data
             relevent_books = []
             for book in books:
-                if self.is_book_relevent(book, request.query_params):
+                if request.query_params.get("name",) == book.get("name"):
                     relevent_books.append(book)
             return Response(relevent_books)
 
         return Response(serializer.errors)
-
-    def is_book_relevent(self, book, params):
-        """Returns True if the given book is relevent to query"""
-        
-        if not params:
-            return True
-
-        check_params = (
-            "name",
-            "country",
-            "publisher"
-        )
-        for check_param in check_params:
-            if params.get(check_param,) == book.get(check_param):
-                return True
-
-        year = dt.datetime.strptime(book.get("release_date"), "%Y-%m-%d").strftime("%Y")
-
-        return year == params.get("release_date",)
