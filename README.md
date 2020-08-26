@@ -80,6 +80,7 @@ Before launching the application run the following command on terminal.
 
 ``` shell
 cd IceAndFire
+python manage.py makemigrations
 python manage.py migrate
 ```
 
