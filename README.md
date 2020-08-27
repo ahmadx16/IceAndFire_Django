@@ -49,21 +49,27 @@ You can configure any of the following databases.
 This application is configured to work with MySQL local server. In order to connect to MySQL Server to do following steps:
 
 1.  Install the MySQL server if it is not locally installed on your machine. You can visit [MySQL installation guide](https://dev.MySQL.com/doc/MySQL-installation-excerpt/5.7/en/) for the details of installation of server.
-2. Create a database on MySQL and add the database name, user, and password on file [my.cnf](IceAndFire/IceAndFire/my.cnf) file under client section. You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
+2. Create a database on MySQL and add the database name, user, and password on file [settings.py](IceAndFire/IceAndFire/settings.py) (from line 79-88) in the *DATABASE* dictionary . 
 
 ``` 
-[client]
-database = database_name
-user = root
-password = password
-default-character-set = utf8
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'database_name',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 ```
+You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
 
 3. Finally, you will need to install a python interface to MySQL in your virtual environment, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
 
 ### Sqlite Connection Setup (optional)
 
-This step is **NOT** required if you have already setup the MySQL connection. It is a quick workaround if you do not want to go through the process of connecting with MySQL setup. In order to use sqlite as your primary database simply update file [settings.py](IceAndFire/IceAndFire/settings.py) and replace *DATABASES* dictionary from line 79-86 with following code.
+This step is **NOT** required if you have already setup the MySQL connection. It is a quick workaround if you do not want to go through the process of connecting with MySQL setup. In order to use sqlite as your primary database simply update file [settings.py](IceAndFire/IceAndFire/settings.py) and replace *DATABASES* dictionary from line 79-88 with following code.
 
 ``` python
 DATABASES = {
@@ -80,7 +86,6 @@ Before launching the application run the following command on terminal.
 
 ``` shell
 cd IceAndFire
-python manage.py makemigrations
 python manage.py migrate
 ```
 
