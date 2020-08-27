@@ -51,7 +51,7 @@ This application is configured to work with MySQL local server. In order to conn
 1.  Install the MySQL server if it is not locally installed on your machine. You can visit [MySQL installation guide](https://dev.MySQL.com/doc/MySQL-installation-excerpt/5.7/en/) for the details of installation of server.
 2. Create a database on MySQL and add the database name, user, and password on file [settings.py](IceAndFire/IceAndFire/settings.py) (from line 79-88) in the *DATABASE* dictionary . 
 
-``` 
+``` python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
