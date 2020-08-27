@@ -25,12 +25,8 @@ class ResponseInfo(object):
 class BookViewSet(viewsets.ViewSet):
     """Book ViewSet for handeling internal books"""
 
-    queryset = Book.objects.all()
-    permissions_classes = [
-        permissions.AllowAny
-    ]
-
     def create(self, request):
+        # validating data before creating user
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
@@ -48,8 +44,9 @@ class BookViewSet(viewsets.ViewSet):
         return Response(serializer.errors)
 
     def list(self, request):
-        serializer = BookSerializer(self.queryset, many=True)
+        serializer = BookSerializer(Book.objects.all(), many=True)
         books = serializer.data
+        # only books relevent to query of all books if no query
         relevent_books = []
         for book in books:
             if self.is_book_relevent(book, request.query_params):
@@ -60,7 +57,7 @@ class BookViewSet(viewsets.ViewSet):
         return Response(response_format)
 
     def partial_update(self, request, pk=None):
-        book = get_object_or_404(self.queryset, pk=pk)
+        book = get_object_or_404(Book, pk=pk)
         message = f"The book {str(book.name)} was updated successfully"
 
         serializer = BookSerializer(data=request.data, partial=True)
@@ -78,9 +75,10 @@ class BookViewSet(viewsets.ViewSet):
         return Response(serializer.errors)
 
     def destroy(self, request, pk=None):
-        book = get_object_or_404(self.queryset, pk=pk)
+        book = get_object_or_404(Book, pk=pk)
         message = f"The book {str(book.name)} was deleted successfully"
         authors = book.authors.all()
+        # deleting related authors of the book
         for author in authors:
             author.delete()
         book.delete()
@@ -91,7 +89,7 @@ class BookViewSet(viewsets.ViewSet):
         return Response(response_format)
 
     def retrieve(self, request, pk=None):
-        book = get_object_or_404(self.queryset, pk=pk)
+        book = get_object_or_404(Book, pk=pk)
         book_serialized = BookSerializer(book)
 
         response_format = ResponseInfo(status_code=200,
@@ -121,17 +119,21 @@ class BookViewSet(viewsets.ViewSet):
         """Updates authors of a given book instance"""
 
         authors = book.authors.all()
+
         if not updated_authors:
             return
+
         updated_authors = [author["name"] for author in updated_authors]
 
         min_len_author = min(len(authors), len(updated_authors))
         for i in range(min_len_author):
             authors[i].name = updated_authors[i]
             authors[i].save()
+        # if some authors removed from a book
         if len(authors) > len(updated_authors):
             for i in range(len(updated_authors), len(authors)):
                 authors[i].delete()
+        # if new authors added to book
         elif len(authors) < len(updated_authors):
             for i in range(len(authors), len(updated_authors)):
                 Author.objects.create(book=book, name=updated_authors[i])
@@ -148,9 +150,11 @@ class BookViewSet(viewsets.ViewSet):
             "publisher"
         )
         for check_param in check_params:
+            # checks for the given parameter in the book
             if params.get(check_param,) == book.get(check_param):
                 return True
 
         year = dt.datetime.strptime(book.get("release_date"), "%Y-%m-%d").strftime("%Y")
 
+        # return true if year parameter matches in the book
         return year == params.get("release_date",)
