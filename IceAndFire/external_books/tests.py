@@ -8,7 +8,8 @@ class TestExternalBooks(APITestCase):
 
     def test_get_external_book(self):
         # A valid book url
-        url = '%s?name=A Game of Thrones' % reverse('external-book')
+        url = f"{reverse('external-book')}?name=A Game of Thrones"
+
         response = self.client.get(url)
         expected_response_data = [
             {
@@ -25,7 +26,7 @@ class TestExternalBooks(APITestCase):
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_response_data)
-       
+
         # url with non-existing book
         url = '%s?name=Not a book' % reverse('external-book')
         response = self.client.get(url)

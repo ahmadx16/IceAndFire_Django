@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 import datetime as dt
 from rest_framework import status
 
@@ -32,129 +33,88 @@ class BookViewSet(viewsets.ViewSet):
             validated_data = serializer.validated_data
             authors = validated_data.pop('authors')
             book = Book.objects.create(**validated_data)
-            book_serialized = BookSerializer(book)
             for author in authors:
                 Author.objects.create(book=book, **author)
 
-            response_format = ResponseInfo(status_code=201,
-                                           status="success",
-                                           data=[{"book": book_serialized.data}]).response
-            return Response(response_format, status=status.HTTP_201_CREATED)
+            book_serialized = BookSerializer(book)
+            formated_response = ResponseInfo(status_code=201,
+                                             status="success",
+                                             data=[{"book": book_serialized.data}]).response
+            return Response(formated_response, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
-        serializer = BookSerializer(Book.objects.all(), many=True)
-        books = serializer.data
-        # only books relevent to query of all books if no query
-        relevent_books = []
-        for book in books:
-            if self.is_book_relevent(book, request.query_params):
-                relevent_books.append(book)
-        response_format = ResponseInfo(status_code=200,
-                                       status="success",
-                                       data=relevent_books).response
-        return Response(response_format)
+        if request.query_params:
+            books_query = Book.objects.filter(Q(name=request.query_params.get("name",))
+                                              | Q(country=request.query_params.get("country",))
+                                              | Q(publisher=request.query_params.get("publisher",))
+                                              | Q(release_date__startswith=request.query_params
+                                                  .get("release_date", "None"))
+                                              )
+        else:
+            books_query = Book.objects.all()
+        serializer = BookSerializer(books_query, many=True)
+        formated_response = ResponseInfo(status_code=200,
+                                         status="success",
+                                         data=serializer.data).response
+        return Response(formated_response)
 
     def partial_update(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
-        message = f"The book {str(book.name)} was updated successfully"
+        book_name = str(book.name)
 
         serializer = BookSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            self.update_book(validated_data, book)
+            authors = validated_data.pop('authors', None)
+            # updating authors if given in request
+            self.update_authors(authors, book)
+            # updating to new values from request
+            for (key, value) in validated_data.items():
+                setattr(book, key, value)
+            book.save()
+
             serialized_book = BookSerializer(book)
+            message = f"The book {str(book_name)} was updated successfully"
 
-            response_format = ResponseInfo(status_code=200,
-                                           status="success",
-                                           message=message,
-                                           data=serialized_book.data).response
-            return Response(response_format)
+            formated_response = ResponseInfo(status_code=200,
+                                             status="success",
+                                             message=message,
+                                             data=serialized_book.data).response
+            return Response(formated_response)
 
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
         message = f"The book {str(book.name)} was deleted successfully"
-        authors = book.authors.all()
-        # deleting related authors of the book
-        for author in authors:
-            author.delete()
         book.delete()
 
-        response_format = ResponseInfo(status_code=200,
-                                       status="success",
-                                       message=message).response
-        return Response(response_format)
+        formated_response = ResponseInfo(status_code=200,
+                                         status="success",
+                                         message=message).response
+        return Response(formated_response)
 
     def retrieve(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
         book_serialized = BookSerializer(book)
 
-        response_format = ResponseInfo(status_code=200,
-                                       status="success",
-                                       data=book_serialized.data).response
-        return Response(response_format)
-
-    def update_book(self, validated_data, book):
-        """Updates the new fields if provided"""
-
-        book.name = self.get_new_attr(validated_data, 'name', book.name)
-        book.isbn = self.get_new_attr(validated_data, 'isbn', book.isbn)
-        book.country = self.get_new_attr(validated_data, 'country', book.country)
-        book.number_of_pages = self.get_new_attr(validated_data, 'number_of_pages', book.number_of_pages)
-        book.publisher = self.get_new_attr(validated_data, 'publisher', book.publisher)
-        book.release_date = self.get_new_attr(validated_data, 'release_date', book.release_date)
-        self.update_authors(validated_data.get("authors",), book)
-
-        book.save()
-
-    def get_new_attr(self, validated_data, attr, prev_value):
-        """Returns new attributes from request"""
-
-        return validated_data.get(attr, prev_value)
+        formated_response = ResponseInfo(status_code=200,
+                                         status="success",
+                                         data=book_serialized.data).response
+        return Response(formated_response)
 
     def update_authors(self, updated_authors, book):
-        """Updates authors of a given book instance"""
-
-        authors = book.authors.all()
+        """Updates authors of a given book instance."""
 
         if not updated_authors:
             return
 
         updated_authors = [author["name"] for author in updated_authors]
 
-        min_len_author = min(len(authors), len(updated_authors))
-        for i in range(min_len_author):
-            authors[i].name = updated_authors[i]
-            authors[i].save()
-        # if some authors removed from a book
-        if len(authors) > len(updated_authors):
-            for i in range(len(updated_authors), len(authors)):
-                authors[i].delete()
-        # if new authors added to book
-        elif len(authors) < len(updated_authors):
-            for i in range(len(authors), len(updated_authors)):
-                Author.objects.create(book=book, name=updated_authors[i])
-
-    def is_book_relevent(self, book, params):
-        """Returns True if the given book is relevent to query"""
-
-        if not params:
-            return True
-
-        check_params = (
-            "name",
-            "country",
-            "publisher"
-        )
-        for check_param in check_params:
-            # checks for the given parameter in the book
-            if params.get(check_param,) == book.get(check_param):
-                return True
-
-        year = dt.datetime.strptime(book.get("release_date"), "%Y-%m-%d").strftime("%Y")
-
-        # return true if year parameter matches in the book
-        return year == params.get("release_date",)
+        # delete previous authors
+        book.authors.all().delete()
+        # create new authors referencing to same book
+        for author in updated_authors:
+            Author.objects.create(book=book, name=author)

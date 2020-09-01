@@ -12,7 +12,7 @@ class ExternalBookSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         """Change keys to the required format"""
-        
+
         ret = super().to_representation(instance)
         ret['number_of_pages'] = ret.pop('numberOfPages')
         ret['release_date'] = ret.pop('released')
