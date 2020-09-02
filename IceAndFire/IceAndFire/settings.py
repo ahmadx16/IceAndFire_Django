@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'IceAndFire.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'super_new',
+        'NAME': 'normalized',
         'USER': 'root',
         'PASSWORD': 'root123',
         'HOST': 'localhost',
