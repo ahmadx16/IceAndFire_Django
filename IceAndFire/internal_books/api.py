@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
-from .models import Book, find_remove_extra_authors
+from .models import Book
 from .serializers import BookSerializer
 
 
@@ -25,7 +25,6 @@ class BookViewSet(viewsets.ViewSet):
     """Book ViewSet for handeling internal books"""
 
     def create(self, request):
-        # validating data before creating user
         book_serializer = BookSerializer(data=request.data)
         if book_serializer.is_valid():
             book = book_serializer.save()
@@ -38,15 +37,12 @@ class BookViewSet(viewsets.ViewSet):
         return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
-        search_str = request.query_params.get('search_str',)
-        if search_str:
-            books_query = Book.objects.filter(Q(name__icontains=search_str)
-                                              | Q(country__icontains=search_str)
-                                              | Q(publisher__icontains=search_str)
-                                              | Q(release_date__startswith=search_str)
-                                              )
-        else:
-            books_query = Book.objects.all()
+        search_str = request.query_params.get('search_str', "")
+        books_query = Book.objects.filter(Q(name__icontains=search_str)
+                                          | Q(country__icontains=search_str)
+                                          | Q(publisher__icontains=search_str)
+                                          | Q(release_date__startswith=search_str)
+                                          )
         serialized_books = BookSerializer(books_query, many=True)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
@@ -76,7 +72,8 @@ class BookViewSet(viewsets.ViewSet):
         book_name = book.name
         authors = list(book.authors.all())
         book.delete()
-        find_remove_extra_authors(authors)
+        for author in authors:
+            author.remove_extra_author()
         message = f"The book {str(book_name)} was deleted successfully"
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",

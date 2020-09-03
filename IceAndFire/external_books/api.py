@@ -21,8 +21,7 @@ class ExternalBook(APIView):
             error = {"error": "No Connection, Check your connection"}
             return Response(error, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-        book_response = book_response.json()
-        book_serializer = ExternalBookSerializer(data=book_response, many=True)
+        book_serializer = ExternalBookSerializer(data=book_response.json(), many=True)
 
         if book_serializer.is_valid():
             return Response(book_serializer.data)

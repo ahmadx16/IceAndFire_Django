@@ -7,6 +7,12 @@ class Author(models.Model):
     def __str__(self):
         return str(self.name)
 
+    def remove_extra_author(self):
+        """Removes an author with no books from database."""
+
+        if not self.author_books.count():
+            self.delete()
+
 
 class Book(models.Model):
     name = models.CharField(max_length=150)
@@ -20,32 +26,28 @@ class Book(models.Model):
     def __str__(self):
         return str(self.name)
 
+    def update_authors(self, updated_authors):
+        """Updates authors of a given book instance."""
 
-def update_authors(updated_authors, book):
-    """Updates authors of a given book instance."""
+        if not updated_authors:
+            return
+        updated_authors = [author["name"] for author in updated_authors]
+        authors = list(self.authors.all())
+        # clear previous authors reference to book
+        self.authors.clear()
+        # create new authors referencing to same book
+        self.new_book_authors(updated_authors)
+        self.find_remove_extra_authors(authors)
 
-    if not updated_authors:
-        return
-    updated_authors = [author["name"] for author in updated_authors]
-    authors = list(book.authors.all())
-    # clear previous authors reference to book
-    book.authors.clear()
-    find_remove_extra_authors(authors)
-    # create new authors referencing to same book
-    new_book_authors(book, updated_authors)
+    def new_book_authors(self, new_authors):
+        """Adds new book authors if not in database."""
 
+        for author in new_authors:
+            author_instance, _ = Author.objects.get_or_create(name=author)
+            self.authors.add(author_instance)
 
-def new_book_authors(book, new_authors):
-    """Adds new book authors if not in database."""
+    def find_remove_extra_authors(self, authors):
+        """Finds and Removes given authors with no books from database."""
 
-    for author in new_authors:
-        author_instance, _ = Author.objects.get_or_create(name=author)
-        book.authors.add(author_instance)
-
-
-def find_remove_extra_authors(authors):
-    """Finds and Removes given authors with no books from database."""
-
-    for author in authors:
-        if not author.author_books.count():
-            author.delete()
+        for author in authors:
+            author.remove_extra_author()
