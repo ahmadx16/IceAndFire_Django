@@ -15,38 +15,38 @@ class TestInternalBooks(APITestCase):
     def test_create_book_(self):
         """Tests create book API"""
 
-        response = self.client.post(self.url_list, create_book_data, format='json')
-        response.data["data"].pop("id")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, expected_create_book)
+        create_book_response = self.client.post(self.url_list, create_book_data, format='json')
+        create_book_response.data["data"].pop("id")
+        self.assertEqual(create_book_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(create_book_response.data, expected_create_book)
 
     def test_read_book_(self):
         """Tests read book API"""
 
-        response = self.client.post(self.url_list, create_book_data, format='json')
-        response = self.client.get(self.url_list)
-        response.data["data"][0].pop("id")
+        read_book_response = self.client.post(self.url_list, create_book_data, format='json')
+        read_book_response = self.client.get(self.url_list)
+        read_book_response.data["data"][0].pop("id")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_read_book)
+        self.assertEqual(read_book_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(read_book_response.data, expected_read_book)
 
     def test_delete_book(self):
         """Tests update book API"""
 
         url_detial = reverse("internal-book-detail", kwargs={'pk': 2})
         self.client.post(self.url_list, create_book_data, format='json')
-        response = self.client.delete(url_detial)
+        delete_book_response = self.client.delete(url_detial)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_delete_book)
+        self.assertEqual(delete_book_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(delete_book_response.data, expected_delete_book)
 
     def test_update_book(self):
         """Tests update book API"""
         # auto scheduled to 4th
         url_detial = reverse("internal-book-detail", kwargs={'pk': 4})
         self.client.post(self.url_list, create_book_data, format='json')
-        response = self.client.patch(url_detial, update_book_data, format='json')
-        response.data["data"].pop("id")
+        update_book_response = self.client.patch(url_detial, update_book_data, format='json')
+        update_book_response.data["data"].pop("id")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_book_update)
+        self.assertEqual(update_book_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(update_book_response.data, expected_book_update)
