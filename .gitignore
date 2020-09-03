@@ -1,0 +1,22 @@
+instructions/
+.vscode
+way.txt
+test.py
+test_queries.txt
+__pycache__
+
+
+.DS_Store
+*.sqlite3
+media/
+*.pyc
+*.db
+*.pid
+
+
+# Ignore Django Migrations in Development if you are working on team
+
+# For Development only
+# **/migrations/**
+# !**/migrations
+# !**/migrations/__init__.py
