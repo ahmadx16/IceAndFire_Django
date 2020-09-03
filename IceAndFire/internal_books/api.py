@@ -27,11 +27,10 @@ class BookViewSet(viewsets.ViewSet):
     def create(self, request):
         book_serializer = BookSerializer(data=request.data)
         if book_serializer.is_valid():
-            book = book_serializer.save()
-            serialized_book = BookSerializer(book)
+            book_serializer.save()
             formatted_response = ResponseInfo(status_code=201,
                                               status="success",
-                                              data=serialized_book.data).response
+                                              data=book_serializer.data).response
             return Response(formatted_response, status=status.HTTP_201_CREATED)
 
         return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -55,14 +54,13 @@ class BookViewSet(viewsets.ViewSet):
 
         book_serializer = BookSerializer(book, data=request.data, partial=True)
         if book_serializer.is_valid():
-            updated_book = book_serializer.save()
-            serialized_book = BookSerializer(updated_book)
+            book_serializer.save()
             message = f"The book {str(book_name)} was updated successfully"
 
             formatted_response = ResponseInfo(status_code=200,
                                               status="success",
                                               message=message,
-                                              data=serialized_book.data).response
+                                              data=book_serializer.data).response
             return Response(formatted_response)
 
         return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -82,9 +80,9 @@ class BookViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
-        serialized_book = BookSerializer(book)
+        book_serializer = BookSerializer(book)
 
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=serialized_book.data).response
+                                          data=book_serializer.data).response
         return Response(formatted_response)
