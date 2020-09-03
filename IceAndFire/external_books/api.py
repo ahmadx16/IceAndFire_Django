@@ -2,7 +2,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 import requests
-import datetime as dt
 
 from .serializers import ExternalBookSerializer
 
@@ -14,11 +13,7 @@ class ExternalBook(APIView):
 
     def get(self, request):
         try:
-            if request.query_params.get("name",):
-                url = self.external_url + "?name=" + request.query_params.get("name",)
-            else:
-                url = self.external_url
-            response = requests.request("GET", url)
+            book_response = requests.request("GET", self.external_url, params=request.query_params)
         except requests.exceptions.Timeout:
             error = {"error": "Connection Timeout, Check your connection"}
             return Response(error, status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -26,10 +21,10 @@ class ExternalBook(APIView):
             error = {"error": "No Connection, Check your connection"}
             return Response(error, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-        response_books = response.json()
-        serializer = ExternalBookSerializer(data=response_books, many=True)
+        book_response = book_response.json()
+        book_serializer = ExternalBookSerializer(data=book_response, many=True)
 
-        if serializer.is_valid():
-            return Response(serializer.data)
+        if book_serializer.is_valid():
+            return Response(book_serializer.data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

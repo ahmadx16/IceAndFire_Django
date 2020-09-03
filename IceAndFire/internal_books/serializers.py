@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from internal_books.models import Book, Author
+from .models import Book, Author
 from .models import update_authors, new_book_authors
 
 
@@ -9,12 +9,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ['name']
 
-    def to_representation(self, instance):
-        author = super().to_representation(instance)
+    def to_representation(self, author_instance):
+        author = super().to_representation(author_instance)
         return author['name']
 
-    def to_internal_value(self, data):
-        return super().to_internal_value({"name": data})
+    def to_internal_value(self, author_data):
+        return super().to_internal_value({"name": author_data})
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -25,14 +25,13 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['id', 'name', 'isbn', 'authors', 'number_of_pages', 'publisher', 'country', 'release_date']
 
-
     def create(self, validated_data):
         authors = validated_data.pop('authors')
         book = Book.objects.create(**validated_data)
         new_authors = [author['name'] for author in authors]
         # add new authors to book
         new_book_authors(book, new_authors)
-        
+
         return book
 
     def update(self, book, validated_data):
@@ -45,6 +44,3 @@ class BookSerializer(serializers.ModelSerializer):
         book.save()
 
         return book
-
-    
-    

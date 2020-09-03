@@ -10,11 +10,11 @@ class ExternalBookSerializer(serializers.Serializer):
     country = serializers.CharField(max_length=50)
     released = serializers.DateTimeField(format="%Y-%m-%d")
 
-    def to_representation(self, instance):
+    def to_representation(self, book_instance):
         """Change keys to the required format"""
 
-        ret = super().to_representation(instance)
-        ret['number_of_pages'] = ret.pop('numberOfPages')
-        ret['release_date'] = ret.pop('released')
+        book = super().to_representation(book_instance)
+        book['number_of_pages'] = book.pop('numberOfPages')
+        book['release_date'] = book.pop('released')
 
-        return ret
+        return book

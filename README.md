@@ -234,10 +234,7 @@ GET /api/v1/books
 
 | Name         | DataType     | Required/Optional | Description               |
 |--------------|--------------|-------------------|---------------------------|
-| name         | string       | optional          | Name of the book          |
-| country      | string       | optional          | Country of the book       |
-| publisher    | string       | optional          | Publisher of the book     |
-| release_date | number(year) | optional          | Released year of the book |
+| search_str         | string       | optional          | Searches for name/country/publisher/release year like strings in books
 
 </br>
 

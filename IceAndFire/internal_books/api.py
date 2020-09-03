@@ -1,11 +1,9 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-import datetime as dt
-from rest_framework import status
 
-from internal_books.models import Book, Author
+from .models import Book, find_remove_extra_authors
 from .serializers import BookSerializer
 
 
@@ -31,10 +29,10 @@ class BookViewSet(viewsets.ViewSet):
         book_serializer = BookSerializer(data=request.data)
         if book_serializer.is_valid():
             book = book_serializer.save()
-            book_serialized = BookSerializer(book)
+            serialized_book = BookSerializer(book)
             formatted_response = ResponseInfo(status_code=201,
                                               status="success",
-                                              data=book_serialized.data).response
+                                              data=serialized_book.data).response
             return Response(formatted_response, status=status.HTTP_201_CREATED)
 
         return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -49,10 +47,10 @@ class BookViewSet(viewsets.ViewSet):
                                               )
         else:
             books_query = Book.objects.all()
-        serializer = BookSerializer(books_query, many=True)
+        serialized_books = BookSerializer(books_query, many=True)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=serializer.data).response
+                                          data=serialized_books.data).response
         return Response(formatted_response)
 
     def partial_update(self, request, pk=None):
@@ -61,7 +59,6 @@ class BookViewSet(viewsets.ViewSet):
 
         book_serializer = BookSerializer(book, data=request.data, partial=True)
         if book_serializer.is_valid():
-
             updated_book = book_serializer.save()
             serialized_book = BookSerializer(updated_book)
             message = f"The book {str(book_name)} was updated successfully"
@@ -76,9 +73,11 @@ class BookViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
-        message = f"The book {str(book.name)} was deleted successfully"
+        book_name = book.name
+        authors = list(book.authors.all())
         book.delete()
-
+        find_remove_extra_authors(authors)
+        message = f"The book {str(book_name)} was deleted successfully"
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
                                           message=message).response
@@ -86,9 +85,9 @@ class BookViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         book = get_object_or_404(Book, pk=pk)
-        book_serialized = BookSerializer(book)
+        serialized_book = BookSerializer(book)
 
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=book_serialized.data).response
+                                          data=serialized_book.data).response
         return Response(formatted_response)

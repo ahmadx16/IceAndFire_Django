@@ -2,22 +2,22 @@
 expected_create_book = {
     "status_code": 201,
     "status": "success",
-    "data": [
+    "data":
         {
-            "book": {
-                "name": "Good Book",
-                        "isbn": "978-0553108033",
-                        "authors": [
-                            "Martin",
-                            "ToocoMan"
-                        ],
-                "number_of_pages": 694,
-                "publisher": "Bantam Books",
-                "country": "United States",
-                "release_date": "2000-02-02"
-            }
+
+            "name": "Good Book",
+            "isbn": "978-0553108033",
+            "authors": [
+                "Martin",
+                "ToocoMan"
+            ],
+            "number_of_pages": 694,
+            "publisher": "Bantam Books",
+            "country": "United States",
+            "release_date": "2000-02-02"
+
         }
-    ]
+
 }
 
 expected_read_book = {

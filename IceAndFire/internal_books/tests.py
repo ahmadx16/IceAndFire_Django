@@ -16,7 +16,7 @@ class TestInternalBooks(APITestCase):
         """Tests create book API"""
 
         response = self.client.post(self.url_list, create_book_data, format='json')
-        response.data["data"][0]["book"].pop("id")
+        response.data["data"].pop("id")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, expected_create_book)
 
