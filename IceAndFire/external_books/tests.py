@@ -28,7 +28,7 @@ class TestExternalBooks(APITestCase):
         self.assertEqual(book_response.data, expected_response_data)
 
         # url with non-existing book
-        url = '%s?name=Not a book' % reverse('external-book')
+        url = f"{reverse('external-book')}?name=Not A Book"
         book_response = self.client.get(url)
         expected_response_data = []
         self.assertEqual(book_response.status_code, status.HTTP_200_OK)
