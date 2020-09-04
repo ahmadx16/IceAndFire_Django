@@ -234,7 +234,7 @@ GET /api/v1/books
 
 | Name         | DataType     | Required/Optional | Description               |
 |--------------|--------------|-------------------|---------------------------|
-| search_str         | string       | optional          | Searches for name/country/publisher/release year like strings in books
+| search         | string       | optional          | Searches for name/country/publisher/release year like strings in books. It does case-insensitive partial matching.
 
 </br>
 

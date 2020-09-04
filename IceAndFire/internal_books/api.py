@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, generics
+from rest_framework import status, generics, filters
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -30,6 +30,14 @@ class BookQuerySet:
 
 class BookListCreateView(BookQuerySet, generics.ListCreateAPIView):
     """For handeling internal books List, Create functionality"""
+    filter_backends = (filters.SearchFilter,)
+    # case-insensitive partial searching
+    search_fields = [
+        'name',
+        'publisher',
+        'country',
+        'release_date',
+    ]
 
     def list(self, request, *args, **kwargs):
         books_response = super().list(request, *args, **kwargs)
