@@ -1,9 +1,6 @@
 from rest_framework import status, generics, filters
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
-
-from .models import Book
+from .models.book import Book
 from .serializers import BookSerializer
 
 

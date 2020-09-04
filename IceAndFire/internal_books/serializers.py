@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Book, Author
+from .models.book import Book
+from .models.author import Author
 
 
 class AuthorSerializer(serializers.ModelSerializer):
