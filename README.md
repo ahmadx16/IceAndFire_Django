@@ -20,14 +20,14 @@ Following are the instructions that you need perform in order to run the applica
 
 ## Python Environment Setup
 
-It is recommended to create a virtual environment before installing django. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
+It is recommended to create a virtual environment before installing django. This project uses [virtualenv](https://pypi.org/project/virtualenv/) for this purpose. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
 
 ``` shell
 python3 -m venv /path/to/new/virtual/environment
 source /path/to/new/virtual/environment/bin/activate
 ```
 
-The above commands will create and activate a new virtual environment. Learn more about virtual environment venv [here](https://docs.python.org/3/library/venv.html).
+The above commands will create and activate a new virtual environment. Learn more about virtual environment virtualenv [here](https://pypi.org/project/virtualenv/).
 
 Now install application requirements using following command.
 
