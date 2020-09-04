@@ -65,8 +65,10 @@ class BookRetrieveUpdateDestroyView(BookQuerySet, generics.RetrieveUpdateDestroy
         return Response(formatted_response)
 
     def update(self, request, *args, **kwargs):
+        book_instance = self.get_object()
+        previous_book_name = str(book_instance.name)
         books_response = super().update(request, *args, **kwargs)
-        message = "The book {} was updated successfully".format(str(books_response.data['name']))
+        message = "The book {} was updated successfully".format(previous_book_name)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
                                           message=message,
