@@ -78,7 +78,11 @@ class BookRetrieveUpdateDestroyView(BookQuerySet, generics.RetrieveUpdateDestroy
     def destroy(self, request, *args, **kwargs):
         book_instance = self.get_object()
         book_name = str(book_instance.name)
+        authors = list(book_instance.authors.all())
         super().destroy(request, *args, **kwargs)
+        for author in authors:
+            # checks and remove authors with no books
+            author.remove_extra_author()
         message = f"The book {book_name} was deleted successfully"
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
