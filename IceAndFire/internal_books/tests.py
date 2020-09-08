@@ -33,8 +33,8 @@ class TestInternalBooks(APITestCase):
     def test_delete_book(self):
         """Tests update book API"""
 
-        url_detial = reverse("internal-book-detail", kwargs={'pk': 2})
-        self.client.post(self.url_list, create_book_data, format='json')
+        book_response = self.client.post(self.url_list, create_book_data, format='json')
+        url_detial = reverse("internal-book-detail", kwargs={'pk': book_response.data['data']['id']})
         delete_book_response = self.client.delete(url_detial)
 
         self.assertEqual(delete_book_response.status_code, status.HTTP_200_OK)
@@ -43,8 +43,8 @@ class TestInternalBooks(APITestCase):
     def test_update_book(self):
         """Tests update book API"""
         # auto scheduled to 4th
-        url_detial = reverse("internal-book-detail", kwargs={'pk': 4})
-        self.client.post(self.url_list, create_book_data, format='json')
+        book_response = self.client.post(self.url_list, create_book_data, format='json')
+        url_detial = reverse("internal-book-detail", kwargs={'pk': book_response.data['data']['id']})
         update_book_response = self.client.patch(url_detial, update_book_data, format='json')
         update_book_response.data["data"].pop("id")
 

@@ -1,8 +1,9 @@
 from rest_framework import routers
-from .api import BookViewSet
+from django.urls import path
+from .api import BookListCreateView, BookRetrieveUpdateDestroyView
 
 
-router = routers.DefaultRouter(trailing_slash=False)
-router.register('books', BookViewSet, 'internal-book')
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('books', BookListCreateView.as_view(), name='internal-book-list'),
+    path('books/<int:pk>', BookRetrieveUpdateDestroyView.as_view(), name='internal-book-detail')
+]

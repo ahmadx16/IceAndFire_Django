@@ -20,14 +20,14 @@ Following are the instructions that you need perform in order to run the applica
 
 ## Python Environment Setup
 
-It is recommended to create a virtual environment before installing django. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
+It is recommended to create a virtual environment before installing django. This project uses [virtualenv](https://pypi.org/project/virtualenv/) for this purpose. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
 
 ``` shell
 python3 -m venv /path/to/new/virtual/environment
 source /path/to/new/virtual/environment/bin/activate
 ```
 
-The above commands will create and activate a new virtual environment. Learn more about virtual environment venv [here](https://docs.python.org/3/library/venv.html).
+The above commands will create and activate a new virtual environment. Learn more about virtual environment virtualenv [here](https://pypi.org/project/virtualenv/).
 
 Now install application requirements using following command.
 
@@ -63,6 +63,7 @@ DATABASES = {
     }
 }
 ```
+
 You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
 
 3. Finally, you will need to install a python interface to MySQL in your virtual environment, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
@@ -201,22 +202,19 @@ It will return response with following JSON data
 {
     "status_code": 201,
     "status": "success",
-    "data": [
-        {
-            "book": {
-                "name": "Good Book",
-                "isbn": "978-0553108033",
-                "authors": [
-                    "Martin",
-                    "ToocoMan"
-                ],
-                "number_of_pages": 694,
-                "publisher": "Bantam Books",
-                "country": "United States",
-                "release_date": "1999-02-02"
-            }
-        }
-    ]
+    "data":  {
+        "name": "Good Book",
+        "isbn": "978-0553108033",
+        "authors": [
+            "Martin",
+            "ToocoMan"
+        ],
+        "number_of_pages": 694,
+        "publisher": "Bantam Books",
+        "country": "United States",
+        "release_date": "1999-02-02"
+    }
+        
 }
 ```
 
@@ -234,7 +232,7 @@ GET /api/v1/books
 
 | Name         | DataType     | Required/Optional | Description               |
 |--------------|--------------|-------------------|---------------------------|
-| search_str         | string       | optional          | Searches for name/country/publisher/release year like strings in books
+| search         | string       | optional          | Searches for name/country/publisher/release year like strings in books. It does case-insensitive partial matching.
 
 </br>
 

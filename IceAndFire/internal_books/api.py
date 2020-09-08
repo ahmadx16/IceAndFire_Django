@@ -1,9 +1,6 @@
-from rest_framework import viewsets, status
+from rest_framework import status, generics, filters
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
-
-from .models import Book
+from .models.book import Book
 from .serializers import BookSerializer
 
 
@@ -21,68 +18,70 @@ class ResponseInfo(object):
             self.response.pop("message")
 
 
-class BookViewSet(viewsets.ViewSet):
-    """Book ViewSet for handeling internal books"""
+class BookQuerySet:
+    """Defines queryset and serializer class for the book"""
 
-    def create(self, request):
-        book_serializer = BookSerializer(data=request.data)
-        if book_serializer.is_valid():
-            book_serializer.save()
-            formatted_response = ResponseInfo(status_code=201,
-                                              status="success",
-                                              data=book_serializer.data).response
-            return Response(formatted_response, status=status.HTTP_201_CREATED)
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
 
-        return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def list(self, request):
-        search_str = request.query_params.get('search_str', "")
-        books_query = Book.objects.filter(Q(name__icontains=search_str)
-                                          | Q(country__icontains=search_str)
-                                          | Q(publisher__icontains=search_str)
-                                          | Q(release_date__startswith=search_str)
-                                          )
-        serialized_books = BookSerializer(books_query, many=True)
+class BookListCreateView(BookQuerySet, generics.ListCreateAPIView):
+    """For handeling internal books List, Create functionality"""
+    filter_backends = (filters.SearchFilter,)
+    # case-insensitive partial searching
+    search_fields = [
+        'name',
+        'publisher',
+        'country',
+        'release_date',
+    ]
+
+    def list(self, request, *args, **kwargs):
+        books_response = super().list(request, *args, **kwargs)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=serialized_books.data).response
+                                          data=books_response.data).response
         return Response(formatted_response)
 
-    def partial_update(self, request, pk=None):
-        book = get_object_or_404(Book, pk=pk)
-        book_name = str(book.name)
+    def create(self, request, *args, **kwargs):
+        books_response = super().create(request, *args, **kwargs)
+        formatted_response = ResponseInfo(status_code=201,
+                                          status="success",
+                                          data=books_response.data).response
+        return Response(formatted_response, status=status.HTTP_201_CREATED)
 
-        book_serializer = BookSerializer(book, data=request.data, partial=True)
-        if book_serializer.is_valid():
-            book_serializer.save()
-            message = f"The book {str(book_name)} was updated successfully"
 
-            formatted_response = ResponseInfo(status_code=200,
-                                              status="success",
-                                              message=message,
-                                              data=book_serializer.data).response
-            return Response(formatted_response)
+class BookRetrieveUpdateDestroyView(BookQuerySet, generics.RetrieveUpdateDestroyAPIView):
+    """For handeling internal books Retrieve, Update, Destroy functionality"""
 
-        return Response(book_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def retrieve(self, request, *args, **kwargs):
+        books_response = super().retrieve(request, *args, **kwargs)
+        formatted_response = ResponseInfo(status_code=200,
+                                          status="success",
+                                          data=books_response.data).response
+        return Response(formatted_response)
 
-    def destroy(self, request, pk=None):
-        book = get_object_or_404(Book, pk=pk)
-        book_name = book.name
-        authors = list(book.authors.all())
-        book.delete()
+    def update(self, request, *args, **kwargs):
+        book_instance = self.get_object()
+        previous_book_name = str(book_instance.name)
+        books_response = super().update(request, *args, **kwargs)
+        message = "The book {} was updated successfully".format(previous_book_name)
+        formatted_response = ResponseInfo(status_code=200,
+                                          status="success",
+                                          message=message,
+                                          data=books_response.data).response
+        return Response(formatted_response)
+
+    def destroy(self, request, *args, **kwargs):
+        book_instance = self.get_object()
+        book_name = str(book_instance.name)
+        authors = list(book_instance.authors.all())
+        super().destroy(request, *args, **kwargs)
         for author in authors:
+            # checks and remove authors with no books
             author.remove_extra_author()
-        message = f"The book {str(book_name)} was deleted successfully"
+        message = f"The book {book_name} was deleted successfully"
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
                                           message=message).response
-        return Response(formatted_response)
-
-    def retrieve(self, request, pk=None):
-        book = get_object_or_404(Book, pk=pk)
-        book_serializer = BookSerializer(book)
-
-        formatted_response = ResponseInfo(status_code=200,
-                                          status="success",
-                                          data=book_serializer.data).response
         return Response(formatted_response)
