@@ -63,6 +63,7 @@ DATABASES = {
     }
 }
 ```
+
 You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
 
 3. Finally, you will need to install a python interface to MySQL in your virtual environment, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
@@ -201,22 +202,19 @@ It will return response with following JSON data
 {
     "status_code": 201,
     "status": "success",
-    "data": [
-        {
-            "book": {
-                "name": "Good Book",
-                "isbn": "978-0553108033",
-                "authors": [
-                    "Martin",
-                    "ToocoMan"
-                ],
-                "number_of_pages": 694,
-                "publisher": "Bantam Books",
-                "country": "United States",
-                "release_date": "1999-02-02"
-            }
-        }
-    ]
+    "data":  {
+        "name": "Good Book",
+        "isbn": "978-0553108033",
+        "authors": [
+            "Martin",
+            "ToocoMan"
+        ],
+        "number_of_pages": 694,
+        "publisher": "Bantam Books",
+        "country": "United States",
+        "release_date": "1999-02-02"
+    }
+        
 }
 ```
 
