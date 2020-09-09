@@ -10,46 +10,36 @@ The external API that is used here is the ​[Ice And Fire](https://anapioficean
 
 Following are the instructions that you need perform in order to run the application
 
-1. [Python Environment Setup](#python-environment-setup)
+1. [Clone the repository](#cloning-the-repository)
 1. [Database Setup](#database-setup)
+1. [Python Environment Setup](#python-environment-setup)
 1. [Launching the Application](#launching-the-application)
 1. [Calling the APIs](#calling-the-apis)
 1. [Executing API TestCases](#executing-api-testcases)
 
  
 
-## Python Environment Setup
+## Cloning the Repository
 
-It is recommended to create a virtual environment before installing django. This project uses [virtualenv](https://pypi.org/project/virtualenv/) for this purpose. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
-
-``` shell
-python3 -m venv /path/to/new/virtual/environment
-source /path/to/new/virtual/environment/bin/activate
-```
-
-The above commands will create and activate a new virtual environment. Learn more about virtual environment virtualenv [here](https://pypi.org/project/virtualenv/).
-
-Now install application requirements using following command.
+Clone this repository and switch to the `generic-views_master` branch as it currently contains the latest code. Run the following commands on your shell
 
 ``` shell
-pip install -r requirements.txt
+git clone https://github.com/ahmadx16/IceAndFire_Django.git
+git checkout generic-views_master
 ```
+
+The above commands will download the repository and switch the branch.
 
 ## Database Setup
 
-You can configure any of the following databases.
-
-1. [MySQL Connection Setup](#mysql-connection-setup)
-1. [Sqlite Connection Setup (optional)](#sqlite-connection-setup-optional)
-
-**Note**: If you want to quickly see application up and running you may skip MySQL Connection Setup, and move to the [Sqlite Connection section](#sqlite-connection-setup-optional).
+**Note**: If you want to quickly see application up and running you may skip MySQL Connection Setup, and use the default sqlite database (you do not need to do any configuration for this).
 
 ### MySQL Connection Setup
 
 This application is configured to work with MySQL local server. In order to connect to MySQL Server to do following steps:
 
 1.  Install the MySQL server if it is not locally installed on your machine. You can visit [MySQL installation guide](https://dev.MySQL.com/doc/MySQL-installation-excerpt/5.7/en/) for the details of installation of server.
-2. Create a database on MySQL and add the database name, user, and password on file [settings.py](IceAndFire/IceAndFire/settings.py) (from line 79-88) in the *DATABASE* dictionary . 
+2. Create a database on MySQL and add the database name, user, and password on file [settings.py](IceAndFire/IceAndFire/settings.py) (from line 83-88) in the *DATABASE* dictionary . 
 
 ``` python
 DATABASES = {
@@ -66,19 +56,23 @@ DATABASES = {
 
 You can learn about how to create MySQL database [here](https://dev.mysql.com/doc/refman/8.0/en/creating-database.html)
 
-3. Finally, you will need to install a python interface to MySQL in your virtual environment, which in our case is [mysqlclient 2.0.1](https://pypi.org/project/mysqlclient/). You can learn about how to install by vising the provided link.
+## Python Environment Setup
 
-### Sqlite Connection Setup (optional)
+It is recommended to create a virtual environment before installing django. This project uses [virtualenv](https://pypi.org/project/virtualenv/) for this purpose. You can create a python virtual environment by giving path where you want to create a virtual environment and run following commands.
 
-This step is **NOT** required if you have already setup the MySQL connection. It is a quick workaround if you do not want to go through the process of connecting with MySQL setup. In order to use sqlite as your primary database simply update file [settings.py](IceAndFire/IceAndFire/settings.py) and replace *DATABASES* dictionary from line 79-88 with following code.
+``` shell
+python3 -m venv /path/to/new/virtual/environment
+source /path/to/new/virtual/environment/bin/activate
+```
 
-``` python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+The above commands will create and activate a new virtual environment. Learn more about virtual environment virtualenv [here](https://pypi.org/project/virtualenv/).
+
+**Note:** Before installing requirements below, you may want to decide a database that you want to work on with this application. File [requirements.txt](requirements.txt) contains a requirement `mysqlclient==2.0.1` which is only required when you want to use MySQL as database. If you choose MySQL  please visit [mysqlclient](https://pypi.org/project/mysqlclient/) before, to verify if you need to install MySQL development headers and libraries. Please remove `mysqlclient==2.0.1` requirement at line 5 from `requirements.txt` if you want to work with another database.
+
+Now install application requirements using following command.
+
+``` shell
+pip install -r requirements.txt
 ```
 
 ## Launching the Application
@@ -90,7 +84,7 @@ cd IceAndFire
 python manage.py migrate
 ```
 
-This command will create the database tables that we have specifies in models of our application.
+This command will create the database tables that we have specified in the models of our application.
 
 Now run command.
 
@@ -118,8 +112,6 @@ GET /api/external-books?name=:nameOfABook
 |--------------|--------------|-------------------|---------------------------|
 | name         | string       | required          | Name of the book          |
 
-<br>
-
 **Example:**
 
 Lets call following API to provide an example
@@ -145,8 +137,6 @@ It will return response with `status_code=200` and following JSON data
     }
 ]
 ```
-
-</br>
 
 ### CRUD APIs on Local Database:
 
@@ -218,8 +208,6 @@ It will return response with following JSON data
 }
 ```
 
-</br>
-
 #### **Read Book API**:
 
 Gives information about book
@@ -233,8 +221,6 @@ GET /api/v1/books
 | Name         | DataType     | Required/Optional | Description               |
 |--------------|--------------|-------------------|---------------------------|
 | search         | string       | optional          | Searches for name/country/publisher/release year like strings in books. It does case-insensitive partial matching.
-
-</br>
 
 **Example:**
 
@@ -267,8 +253,6 @@ It will return response with following JSON data
     ]
 }
 ```
-
-</br>
 
 #### **Update Book API**:
 
@@ -336,8 +320,6 @@ It will return response with following JSON data
 }
 ```
 
-</br>
-
 #### **Delete Book API**:
 
 Deletes the book, given an id. 
@@ -364,8 +346,6 @@ It will return response with following JSON data
     "data": []
 }
 ```
-
-</br>
 
 #### **Show Book API**:
 

@@ -37,17 +37,17 @@ class BookListCreateView(BookQuerySet, generics.ListCreateAPIView):
     ]
 
     def list(self, request, *args, **kwargs):
-        books_response = super().list(request, *args, **kwargs)
+        book_json = super().list(request, *args, **kwargs)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=books_response.data).response
+                                          data=book_json.data).response
         return Response(formatted_response)
 
     def create(self, request, *args, **kwargs):
-        books_response = super().create(request, *args, **kwargs)
+        book_json = super().create(request, *args, **kwargs)
         formatted_response = ResponseInfo(status_code=201,
                                           status="success",
-                                          data=books_response.data).response
+                                          data=book_json.data).response
         return Response(formatted_response, status=status.HTTP_201_CREATED)
 
 
@@ -55,27 +55,27 @@ class BookRetrieveUpdateDestroyView(BookQuerySet, generics.RetrieveUpdateDestroy
     """For handeling internal books Retrieve, Update, Destroy functionality"""
 
     def retrieve(self, request, *args, **kwargs):
-        books_response = super().retrieve(request, *args, **kwargs)
+        book_json = super().retrieve(request, *args, **kwargs)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
-                                          data=books_response.data).response
+                                          data=book_json.data).response
         return Response(formatted_response)
 
     def update(self, request, *args, **kwargs):
-        book_instance = self.get_object()
-        previous_book_name = str(book_instance.name)
-        books_response = super().update(request, *args, **kwargs)
+        book_obj = self.get_object()
+        previous_book_name = str(book_obj.name)
+        book_json = super().update(request, *args, **kwargs)
         message = "The book {} was updated successfully".format(previous_book_name)
         formatted_response = ResponseInfo(status_code=200,
                                           status="success",
                                           message=message,
-                                          data=books_response.data).response
+                                          data=book_json.data).response
         return Response(formatted_response)
 
     def destroy(self, request, *args, **kwargs):
-        book_instance = self.get_object()
-        book_name = str(book_instance.name)
-        authors = list(book_instance.authors.all())
+        book_obj = self.get_object()
+        book_name = str(book_obj.name)
+        authors = list(book_obj.authors.all())
         super().destroy(request, *args, **kwargs)
         for author in authors:
             # checks and remove authors with no books
