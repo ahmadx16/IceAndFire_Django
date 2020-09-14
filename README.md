@@ -21,11 +21,12 @@ Following are the instructions that you need perform in order to run the applica
 
 ## Cloning the Repository
 
-Clone this repository and switch to the `generic-views_master` branch as it currently contains the latest code. Run the following commands on your shell
+Clone this repository and switch to the `authentication` branch as it currently contains the latest code. Run the following commands on your shell
 
 ``` shell
 git clone https://github.com/ahmadx16/IceAndFire_Django.git
-git checkout generic-views_master
+cd IceAndFire_Django/
+git checkout authentication
 ```
 
 The above commands will download the repository and switch the branch.
@@ -98,6 +99,96 @@ This command will start the backend server at 127.0.0.1:8080
 
 Following are the APIs that user can call when the server is started.
 
+### Register User:
+
+Registers a new user in the local database.
+
+``` 
+POST /users/register
+```
+
+The request needs to have JSON data in following format:
+
+``` JSON
+{
+    "first_name":"First Name",
+    "last_name":"Last Name",
+    "username":"username",
+    "password":"AStrongPass123",
+    "password2":"AStrongPass123"
+}
+```
+
+**Example:**
+
+Lets call following API to provide an example.
+
+``` shell
+POST http://localhost:8080/users/register
+```
+
+with following data.
+
+``` JSON
+{
+    "first_name":"First Name",
+    "last_name":"Last Name",
+    "username":"username",
+    "password":"AStrongPass123",
+    "password2":"AStrongPass123"
+}
+```
+
+It will return a generated token in following format.
+
+``` JSON
+{
+    "token": "870804328bda58e845530c7804bb144d52abdd94"
+}
+```
+
+### Login User:
+
+Returns a token for an authenticated user.
+
+``` 
+POST /users/login
+```
+
+The request needs to have JSON data in following format:
+
+``` JSON
+{
+    "username":"username",
+    "password":"AStrongPass123"
+}
+```
+
+**Example:**
+
+Lets call following API to provide an example.
+
+``` shell
+POST http://localhost:8080/users/login
+```
+
+with following data.
+
+``` JSON
+{
+    "username":"username",
+    "password":"AStrongPass123"
+}
+```
+
+It will return the token in following format.
+
+``` JSON
+{
+    "token": "870804328bda58e845530c7804bb144d52abdd94"
+}
+```
+
 ### Get External Books:
 
 This API calls an [external API](https://anapioficeandfire.com/Documentation#books) and returns a filtered book information. 
@@ -105,6 +196,16 @@ This API calls an [external API](https://anapioficeandfire.com/Documentation#boo
 ``` 
 GET /api/external-books?name=:nameOfABook
 ```
+
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+
+``` shell
+Authorization: Token {token}
+```
+
+Replace *{token}* above with the token you get when calling login or register API.
 
 **Parameter:** 
 
@@ -149,6 +250,16 @@ Adds a new book to the database.
 ``` 
 POST /api/v1/books
 ```
+
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+
+``` shell
+Authorization: Token {token}
+```
+
+Replace *{token}* above with the token you get when calling login or register API.
 
 The request needs to have JSON data in following format:
 
@@ -216,6 +327,16 @@ Gives information about book
 GET /api/v1/books
 ```
 
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+
+``` shell
+Authorization: Token {token}
+```
+
+Replace *{token}* above with the token you get when calling login or register API.
+
 **Parameters:** 
 
 | Name         | DataType     | Required/Optional | Description               |
@@ -261,6 +382,16 @@ Adds a new book to the database.
 ``` 
 PATCH /api/v1/books/:id
 ```
+
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+
+``` shell
+Authorization: Token {token}
+```
+
+Replace *{token}* above with the token you get when calling login or register API.
 
 The request needs to have any of the following JSON data in following format:
 
@@ -328,6 +459,16 @@ Deletes the book, given an id.
 DELETE /api/v1/books/:id
 ```
 
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+
+``` shell
+Authorization: Token {token}
+```
+
+Replace *{token}* above with the token you get when calling login or register API.
+
 **Example:**
 
 Lets call following API to provide an example
@@ -354,6 +495,15 @@ Gets the book info, given an id.
 ``` 
 GET /api/v1/books/:id
 ```
+
+**Request Header:**
+
+The request requires an authorization token on the header field in following format. 
+```shell
+Authorization: Token {token}
+```
+Replace *{token}* above with the token you get when calling login or register API.
+
 
 **Example:**
 
