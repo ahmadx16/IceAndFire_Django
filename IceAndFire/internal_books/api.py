@@ -1,5 +1,6 @@
 from rest_framework import status, generics, filters
 from rest_framework.response import Response
+
 from .models.book import Book
 from .serializers import BookSerializer
 
@@ -27,6 +28,7 @@ class BookQuerySet:
 
 class BookListCreateView(BookQuerySet, generics.ListCreateAPIView):
     """For handeling internal books List, Create functionality"""
+
     filter_backends = (filters.SearchFilter,)
     # case-insensitive partial searching
     search_fields = [

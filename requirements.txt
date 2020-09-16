@@ -3,3 +3,4 @@ djangorestframework==3.11.1
 requests==2.24.0
 django-filter==2.3.0
 mysqlclient==2.0.1
+django-cors-headers==3.5.0
