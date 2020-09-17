@@ -21,12 +21,12 @@ Following are the instructions that you need perform in order to run the applica
 
 ## Cloning the Repository
 
-Clone this repository and switch to the `authentication` branch as it currently contains the latest code. Run the following commands on your shell
+Clone this repository and switch to the `auth_generic` branch as it currently contains the latest code. Run the following commands on your shell
 
 ``` shell
 git clone https://github.com/ahmadx16/IceAndFire_Django.git
 cd IceAndFire_Django/
-git checkout authentication
+git checkout auth_generic
 ```
 
 The above commands will download the repository and switch the branch.
